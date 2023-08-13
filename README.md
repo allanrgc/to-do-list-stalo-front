@@ -1,1 +1,1 @@
-# to-do-list-stalo-front
+To do list com react native para vaga devJr na STALO
