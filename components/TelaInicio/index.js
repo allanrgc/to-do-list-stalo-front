@@ -1,136 +1,197 @@
-import React, { useState } from "react";
-import { Text, View, ScrollView, TouchableOpacity, KeyboardAvoidingView, TextInput, Keyboard } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, View, ScrollView, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import Task from "./Task";
 import estilos from './estilos';
-import getMeses from './mesesArray'
+import getMeses, {dias_semana} from './mesesArray'
 import { Popup } from "./popup";
+import {  Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { TaskModal } from "./taskModal";
+import FilterTask from "./filterTask";
+import axios from 'axios';
 
-const popuplist = [
-  {
-    id: 1,
-    name: 'Task'
-  },
-  {
-    id: 2,
-    name: 'Task222'
-  },
-  {
-    id: 3,
-    name: '333Task'
-  },
-]
 
-export default function TelaInicio () {
-  let day = new Date().getDate(); //Para obter o dia
-  let month = new Date().getMonth() + 1; //Para obter o mês
-  let year = new Date().getFullYear(); //Para obter o ano
+export default function TelaInicio ({isTrue, onLogout}) {
+  let day = new Date().getDate();
+  let month = new Date().getMonth() + 1; 
+  let year = new Date().getFullYear();
+  let data = new Date().getDay();
 
   
+
+  // const removeToken = async () => {
+  //   try {
+  //     await AsyncStorage.removeItem('authToken');
+  //   } catch (error) {
+  //     console.error('Erro ao remover o token:', error);
+  //   }
+  // };
+
+  const [selectedTask, setSelectedTask] = useState(null);
+  const openModal = (task) => {
+    setSelectedTask(task);
+  };
+  const [tasks, setTasks] = useState([])
   const [taskItems, setTaskItems] = useState([]);
   const [task, setTask] = useState();
-  const buttonAddTask = () => {
-    Keyboard.dismiss();
-    setTaskItems([...taskItems, task])
-    setTask(null);
-  }
+  const [selectedTaskIndex, setSelectedTaskIndex] = useState(null);
 
-  const completeTask = (index) => {
+  useEffect(() => {
+    axios.get('http://127.0.0.1:8000/api/task')
+      .then(response => {
+        setTasks(response.data);
+      })
+      .catch(error => {
+        console.error('Erro ao buscar tarefas:', error);
+      });
+  }, []);
+
+  // const addTask = (newTask) => {
+  //   if (newTask.trim() !== '') {
+  //     setTaskItems([...taskItems, newTask]);
+  //     console.log(taskItems)
+  //   }
+  // };
+  const addTask = (newTask) => {
+    if (newTask.trim() !== '') {
+      axios.post('http://127.0.0.1:8000/api/task', { description: newTask })
+        .then(response => {
+          setTasks([...tasks, response.data]);
+        })
+        .catch(error => {
+          console.error('Erro ao adicionar tarefa:', error);
+        });
+    }
+  };
+
+  const editTask = (index) => {
     let itemsCopy = [...taskItems];
     itemsCopy.splice(index, 1);
     setTaskItems(itemsCopy)
   }
+  // const deleteTask = (index) => {
+  //   let itemsCopy = [...taskItems];
+  //   itemsCopy.splice(index, 1);
+  //   setTaskItems(itemsCopy)
+  //   setSelectedTask(null);
+  // }
+  const deleteTask = (index) => {
+    const taskToDelete = tasks[index];
+    axios.delete(`http://127.0.0.1:8000/api/task/${taskToDelete.id}`)
+      .then(response => {
+        const updatedTasks = tasks.filter((task, i) => i !== index);
+        setTasks(updatedTasks);
+      })
+      .catch(error => {
+        console.error('Erro ao excluir tarefa:', error);
+      });
+  };
+  
 
   
-    let popupRef = React.createRef()
+    // let popupRef = React.createRef()
 
     const showPopup = () => {
-      popupRef.show()
+      popupRef.showModal()
     }
     const onClosePopup = () => {
-      popupRef.close()
+      popupRef.closeModal()
     }
+    const logout = () => {
+      axios.post('http://127.0.0.1:8000/api/logout')
+        .then(response => {
+          onLogout();
+        })
+        .catch(error => {
+          console.error('Erro ao fazer logout:', error);
+        });
+    };
+    
 
   return (
     <View style={ estilos.mainContainer }>
       <View style={estilos.topHeader}>
         <Text style={ estilos.tituloFiltrar }>Filtrar</Text> 
-        <View style={ estilos.topBottomsContainer }>
-          <TouchableOpacity 
-            style={estilos.topBottoms} onPress={() => handleFilterPress("all")}>
-            <Text>Todas</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={estilos.topBottoms} onPress={() => handleFilterPress("toDo")}>
-            <Text>A fazerrr</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={estilos.topBottoms} onPress={() => handleFilterPress("done")}>
-            <Text>Feitas</Text>
-          </TouchableOpacity>
-
-        </View>
-      </View>
-      
-      
+        <FilterTask tasks={tasks} setFilteredTasks={setTasks} />
+      </View>    
 
 
       <ScrollView style={estilos.tasks} contentContainerStyle={{
           flexGrow: 1
         }}keyboardShouldPersistTaps='handled'>
-        <View style={estilos.tasksWrapper}>
-        <Text style={estilos.sectionTitle}>Today's tasks</Text>
-        <Text>{day} de {getMeses(month)} de {year}</Text>
-        <View style={estilos.items}>
-          {/* This is where the tasks will go! */}
-          {
-            taskItems.map((item, index) => {
-              return (
-                <TouchableOpacity key={index}  onPress={() => completeTask(index)}>
-                  <Task text={item} /> 
-                </TouchableOpacity>
-              )
-            })
-          }
+        <View style={estilos.dateSection}>
+          <Text style={estilos.sectionTitle}>{dias_semana[data]} {day} de {getMeses(month)} de {year}</Text>
         </View>
-      </View>
-      </ScrollView>
+        <View style={{marginTop: 2}}>
+          <View style={estilos.items}>
 
-      {/* <KeyboardAvoidingView 
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={estilos.writeTaskWrapper}
-      >
-        <TextInput style={estilos.input} placeholder={'Write a task'} value={task} onChangeText={text => setTask(text)} />
-        <TouchableOpacity onPress={() => buttonAddTask()}>
-          <View style={estilos.addWrapper}>
-            <Text style={estilos.addText}>+</Text>
+            {taskItems.map((item, index) => (
+          <TouchableOpacity key={index} 
+          onLongPress={() => {openModal(item); setSelectedTaskIndex(index)}} >
+            <Task text={item} 
+              onEdit={() => editTask(index)}
+              onComplete={() => completeTask(index)}
+              onDelete={() => deleteTask(index)} />
+          </TouchableOpacity>
+        ))}
+        
           </View>
-        </TouchableOpacity>
-      </KeyboardAvoidingView> */}
+          
+        </View>
+      
+      </ScrollView>
+      
+
 
       <View style={ estilos.totalTasks }>
-        <Text style={ estilos.totalTasksText } >1/3</Text>
+        <Text style={ estilos.totalTasksText } >Total de tarefas: 1/3</Text>
       </View>
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={estilos.writeTaskWrapper}
       > 
-      <TouchableOpacity style={ estilos.adcionarTask } onPress={showPopup}>
+      <TouchableOpacity style={ estilos.tabBottom } onPress={showPopup}>
         <View style={estilos.addWrapper}>
-          <Text style={estilos.addText}>+</Text>
+          <Feather name="home" size={24} color="#1FCC79" />
+          <Text style={estilos.addText}>Home</Text>
+
         </View>
-        {/* <Button 
-          title='Adcionar'
-          style={{color: '#1fcc79', borderRadius: 100}}
-        /> */}
+        
+        
+      </TouchableOpacity>
+      <TouchableOpacity style={ estilos.adcionarTask } onPress={showPopup}>
+        <View style={estilos.addWrapperCircle}>
+        <Ionicons name="add" size={42} color="white" />
+        </View>
+        
         <Popup 
-          title='Demon popup'
+          title='Criar nova tarefa'
           ref={(target) => popupRef = target}
           onTouchOutside={onClosePopup}
-          data={popuplist}
+          onAddTask={addTask}
           />
+      </TouchableOpacity>
+
+      <TouchableOpacity style={ estilos.tabBottom } onPress={logout}>
+        <View style={estilos.addWrapper}>
+          <MaterialIcons name="logout" size={24} color="#1FCC79" />
+          <Text style={estilos.addText}>Logout</Text>
+        </View>
+
+
+        <TaskModal
+          ref={(target) => popupRef = target}
+          onTouchOutside={onClosePopup}
+          visible={selectedTask !== null}
+          onClose={() => setSelectedTask(null)}
+          onDelete={() => {deleteTask(setSelectedTask(null))
+          }}
+        />
+        
       </TouchableOpacity>
       </KeyboardAvoidingView>
 
     </View>
   )
 }
+
+

@@ -43,3 +43,7 @@ export default getMeses = (month) => {
 
 }
  
+
+ export var dias_semana = new Array(
+    "Dom.", "Seg.", "Ter.", "Qua.",
+    "Qui.", "Sex.", "Sáb.");

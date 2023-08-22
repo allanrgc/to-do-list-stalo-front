@@ -1,41 +1,92 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { Ionicons, Feather } from '@expo/vector-icons';
+import { TaskModal } from "./taskModal";
+import axios from 'axios'
 
 
-const Task = (props) => {
-    return(
-        <View style={styles.item}>
-            <View style={styles.itemLeft}>
-                <View style={styles.square}></View>
-                <Text style={styles.itemText}>{props.text}</Text>
-            </View>
-            <View style={styles.circular}></View>
-        </View>
-    )
+export class Task extends React.Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+          show: false,
+          isSelected: false,
+          
+      };
+  }
+  // const [selectedTask, setSelectedTask] = useState(null);
+
+  showModal = () => {
+      this.setState({ show: true });
+  }
+
+  closeModal = () => {
+      this.setState({ show: false });
+  }
+
+  deleteTask = () => {
+    const { onDelete, text } = this.props;
+    const taskToDelete = tasks.find(task => task.description === text);
+
+    if (taskToDelete) {
+      axios.delete(`http://127.0.0.1:8000/api/task/${taskToDelete.id}`)
+        .then(response => {
+          onDelete();
+        })
+        .catch(error => {
+          console.error('Erro ao excluir tarefa:', error);
+        });
+    }
+  }
+
+  render() {
+      const { text, onEdit, onComplete, onDelete } = this.props;
+      const { show, isSelected } = this.state;
+
+      return (
+          <TouchableOpacity style={styles.item} onLongPress={this.showModal}>
+              <View style={styles.itemLeft}>
+                <BouncyCheckbox
+                value={isSelected}
+                onValueChange={value => this.setState({ isSelected: value })}
+                // onValueChange={setSelection}
+                fillColor="#39C4A5"
+                
+                />
+                <Text style={styles.itemText}>{text}</Text>
+                
+                <TaskModal
+                ref={(target) => popupRef = target}
+                onTouchOutside={this.closeModal}
+                visible={show}
+                onClose={this.closeModal}
+                onDelete={onDelete}
+              />
+              </View>
+              <View>
+                <Feather name="more-vertical" size={24} color="#9FA5C0" />
+              </View>
+          </TouchableOpacity>
+      );
+  }
 }
 
 const styles = StyleSheet.create({
     item: {
       backgroundColor: '#FFF',
       padding: 15,
-      borderRadius: 10,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: 20,
+      marginBottom: 2,
+      width: 400
     },
     itemLeft: {
       flexDirection: 'row',
       alignItems: 'center',
-      flexWrap: 'wrap'
-    },
-    square: {
-      width: 24,
-      height: 24,
-      backgroundColor: '#55BCF6',
-      opacity: 0.4,
-      borderRadius: 5,
-      marginRight: 15,
+      flexWrap: 'wrap',
+      marginLeft: 12
     },
     itemText: {
       maxWidth: '80%',
