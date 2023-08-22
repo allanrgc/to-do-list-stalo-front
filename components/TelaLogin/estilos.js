@@ -93,8 +93,7 @@ const estilos = StyleSheet.create({
     color: '#400303',
     height: 200,
     width: 300,
-    marginTop: 50
-
+    marginTop: 50,
   },
 });
 

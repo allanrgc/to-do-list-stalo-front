@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, TextInput, Button } from "react-native";
-import { Ionicons, FontAwesome, Entypo, MaterialIcons } from '@expo/vector-icons';
+import { View, Text, TextInput, Button } from "react-native";
+import { Ionicons, } from '@expo/vector-icons';
 
 import estilos from './estilos';
 
@@ -33,7 +33,7 @@ export default function TelaCadastro ({navigation}) {
             <TextInput
               placeholder="Email"
               textAlign="left"
-              keyboardType="default"
+              // keyboardType="default"
               paddingLeft = {30}
               style = { flagInputFocus === "foco1" ?
               estilos.inputFocus : estilos.inputNormal }

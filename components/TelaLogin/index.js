@@ -1,22 +1,47 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, TextInput, Button } from "react-native";
-import { Ionicons, FontAwesome, Entypo, MaterialIcons } from '@expo/vector-icons';
+import { View, Text, TextInput, Button, } from "react-native";
+import { Ionicons, } from '@expo/vector-icons';
+import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from "../api";
 
 import estilos from './estilos';
+import { useNavigation } from "@react-navigation/native";
+const getTokenLocally = async () => {
+  try {
+    const token = await AsyncStorage.getItem('authToken');
+    return token;
+  } catch (error) {
+    console.error('Erro ao recuperar o token:', error);
+    return null;
+  }
+};
+const addAuthToken = async (config) => {
+  const token = await getTokenLocally();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+};
+api.interceptors.request.use(addAuthToken);
 
-export default function TelaLogin ({navigation, onLogin}) {
-
+export default function TelaLogin ({fazerLogin}) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [ flagInputFocus, setFlagInputFocus ] = useState("");
+  const [isTrue, setIsTrue] = useState(false);
+  
 
-  const fazerLogin = () => {
-
-    if (true) {
-      // onLogin();
-      navigation.navigate('TelaInicio')
+  const saveToken = async (token) => {
+    try {
+      await AsyncStorage.setItem('authToken', token);
+    } catch (error) {
+      console.error('Erro ao armazenar o token:', error);
     }
   };
   
-  // const navigation = useNavigation()
+
+  const navigation = useNavigation()
   return (
     <View>
       <View style={ estilos.container }>
@@ -27,6 +52,8 @@ export default function TelaLogin ({navigation, onLogin}) {
           <View style={estilos.linhaInput}>
             <TextInput
               placeholder="Email"
+              value={email}
+              onChangeText={text => setEmail(text)}
               textAlign="left"
               keyboardType="default"
               paddingLeft = {30}
@@ -40,6 +67,9 @@ export default function TelaLogin ({navigation, onLogin}) {
           <View style={estilos.linhaInput}>
             <TextInput
               placeholder="Password"
+              value={password}
+              onChangeText={text => setPassword(text)}
+              secureTextEntry
               textAlign="left"
               keyboardType="default"
               paddingLeft = {30}
@@ -51,12 +81,7 @@ export default function TelaLogin ({navigation, onLogin}) {
             <Ionicons style={estilos.iconEye} name="md-eye-outline" size={24} color="black" />
           </View>
           <View style = { estilos.forgotPass }>
-            {/* <Button 
-            title="Esqueceu a senha?" 
-            // onPress = { console.log("nada ainda") } 
-            color="#00000000"
-            onPress={fazerLogin}
-            /> */}
+            
             <Text style={{textAlign:'right', marginBottom: 30}}>Esqueceu a senha ?</Text>
           </View>
         </View>
@@ -68,8 +93,7 @@ export default function TelaLogin ({navigation, onLogin}) {
             title="Login" 
             // onPress = { console.log("nada ainda") } 
             color="#00000000"
-            onPress={fazerLogin}
-            // textAlign='right'
+            onPress={() => fazerLogin(email, password)}
             />
         </View>
 

@@ -17,20 +17,15 @@ const estilos = StyleSheet.create({
     paddingTop: 50
   },
   tituloFiltrar:{
-    color: '#000',
-    fontSize: 21,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    color: '#2E3E5C',
+    fontSize: 17,
+    fontWeight: '700',
+    marginBottom: 20,
+    marginLeft: 15
   },
   topBottomsContainer:{
     flexDirection: 'row',
-    // ,
-    // width: 380,
-    // height: 48,
-    // backgroundColor: 'green', MUDA O FUNDO TODO
-    justifyContent: 'space-evenly',
-    // borderRadius: 32,
-    // backgroundColor: '#fff'
+    justifyContent: 'space-around',
     
   },
   topBottoms:{
@@ -38,46 +33,60 @@ const estilos = StyleSheet.create({
     width:89,
     height:48,
     // marginTop: 100,
-    backgroundColor: '#1fcc79',
-    color:'green',
+    backgroundColor: '#F4F5F7',
     borderRadius: 32,
     alignItems: 'center',
     justifyContent: 'center',
+    tintColor: 'black'
+  },
+  topButtonsText:{
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    color: '#9FA5C0'
+  },
+  activeButton: {
+    backgroundColor: '#1fcc79',
     tintColor: 'white'
+  },
+  activeButtonText: {
+    color: 'white'
   },
   tasks:{
     width: '100%',
-    backgroundColor: '#F4F5F7'
+    backgroundColor: '#F4F5F7',
   },
   totalTasks:{
-    textAlign: 'left'
+    justifyContent: 'flex-start'
   },
   totalTasksText:{
     textAlign: 'left'
   },
   adcionarTask:{
-
+    zIndex: 1
   },
 
 
-  tasksWrapper: {
-    // paddingTop: 80,
-    alignItems: 'center',
-    paddingHorizontal: 20,
+  dateSection: {
+    backgroundColor: '#fff',
+    marginTop: 8,
+    height: 60,
+    justifyContent: 'center'
   },
   sectionTitle: {
-    fontSize: 24,
-    fontWeight: 'bold'
+    fontSize: 17,
+    fontWeight: 'bold',
+    marginLeft: 30, 
+    color: '#2E3E5C'
   },
   items: {
-    marginTop: 30,
+    // marginLeft: 30,
   },
 
 
   writeTaskWrapper: {
-    //position: 'absolute',
-    // zIndex: 1,
-    bottom: -10,
+    position: 'sticky',
+    zIndex: 1,
+    // bottom: -10,
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -95,14 +104,26 @@ const estilos = StyleSheet.create({
   addWrapper: {
     width: 60,
     height: 60,
-    backgroundColor: '#1fcc79',
+    // backgroundColor: '#1fcc79',
     borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
     borderColor: '#C0C0C0',
-    // borderWidth: 1,
   },
-  addText: {},
+  addWrapperCircle: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#1fcc79',
+    borderRadius: 60,
+    marginBottom: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#C0C0C0',
+  },
+  addText: {
+    color: '#1FCC79',
+    fontSize: 12
+  },
 
 });
 

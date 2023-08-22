@@ -1,5 +1,6 @@
-import {Modal, Dimensions, TouchableOpacity, StyleSheet, View, Text, TouchableWithoutFeedback, FlatList} from 'react-native';
+import {Modal, Dimensions, TouchableOpacity, StyleSheet, View, Text, TouchableWithoutFeedback, FlatList, TextInput, Button} from 'react-native';
 import React from 'react'
+import axios from 'axios'
 
 const deviceHeight = Dimensions.get("window").height
 
@@ -7,14 +8,31 @@ export class Popup extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            show: false
+            show: false,
+            newTask: ''
         }
     }
 
-    show = () => {
+
+    addTask = () => {
+        const { newTask } = this.state;
+        
+        if (newTask.trim() !== '') {
+          axios.post('http://127.0.0.1:8000/api/task', { description: newTask })
+            .then(response => {
+              onAddTask(response.data);
+              this.closeModal();
+            })
+            .catch(error => {
+              console.error('Erro ao adicionar tarefa:', error);
+            });
+        }
+      }
+
+    showModal = () => {
         this.setState({show: true})
     }
-    close = () => {
+    closeModal = () => {
         this.setState({show:false})
     }
     renderOutsideTouchable(onTouch) {
@@ -33,10 +51,10 @@ export class Popup extends React.Component {
             <View style={{alignItems: 'center'}}>
                 <Text style={{
                     color: '#182E48',
-                    fontSize: 25,
+                    fontSize: 21,
                     fontWeight: '500',
-                    marginTop: 15,
-                    marginBottom: 30
+                    marginTop: 21,
+                    marginBottom: 10
                 }}>
                     {title}
                 </Text>
@@ -46,11 +64,12 @@ export class Popup extends React.Component {
 
     renderContent = () => {
         const {data} = this.props
+        const {newTask}=this.state
         return(
-            <View>
+            <View style={{borderRadius: 30}}>
                 <FlatList
                 style={{marginBottom: 20}}
-                sowsVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
                 data={data}
                 renderItem={this.renderItem}
                 extraData={data}
@@ -59,6 +78,57 @@ export class Popup extends React.Component {
                 contentContainerStyle={{
                     paddingBottom: 40
                 }}/>
+                <TextInput
+                    style={{ borderWidth: 1, borderRadius:30, height:60, borderColor: '#ccccccaa', margin: 24, padding: 21 }}
+                    placeholder="Descrição"
+                    value={newTask}
+                    onChangeText={(text) => this.setState({ newTask: text })}
+                />
+                <View style={{flexDirection: 'row', justifyContent:'space-evenly'}}>
+                    <TouchableOpacity
+                        title="Cancelar"
+                        onPress={() => {
+                            // this.props.onAddTask(newTask);
+                            this.closeModal();
+                        }}
+                    >
+                        <View style={{
+                            width:160,
+                            height:57,
+                            backgroundColor: '#f4f5f7aa',
+                            borderRadius: 30,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: 90
+                        }}>
+                            <Text style={{fontWeight:'bold'}}>Cancelar</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        title="Adicionar Tarefa"
+                        onPress={() => {
+                            this.props.onAddTask(newTask);
+                            // this.closeModal();
+                        }}
+                    >
+                        <View style={{
+                            width:150,
+                            height:57,
+                            backgroundColor: '#1fcc79',
+                            borderRadius: 30,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: 90
+
+                        }}>
+                            <Text style={{
+                                fontWeight:'bold', color:'white'}} 
+                                >Criar</Text>
+                        </View>
+                    </TouchableOpacity>    
+                </View>
+                
+
             </View>
         )
     }
@@ -90,8 +160,10 @@ export class Popup extends React.Component {
             <Modal
                 animationType={'fade'}
                 transparent={true}
-                visibility={show}
-                onRequestClose={this.close}>
+                visible={show}
+                onRequestClose={this.close}
+                style={{ }}
+                >
 
                 <View style={{flex: 1,
                     backgroundColor: '#000000AA',
@@ -104,8 +176,7 @@ export class Popup extends React.Component {
                             borderTopRightRadius: 10,
                             borderTopLeftRadius: 10,
                             paddingHorizontal: 10,
-                            maxHeight: deviceHeight * 0.4
-                            
+                            maxHeight: deviceHeight * 0.4,
                         }}>
                         {this.renderTitle()}
                         {this.renderContent()}
