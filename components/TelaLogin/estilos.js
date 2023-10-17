@@ -75,10 +75,11 @@ const estilos = StyleSheet.create({
     justifyContent: 'center'
   },
   boxBotao: {
+    justifyContent: 'center',
     width:327,
     height:56,
     marginTop: 20,
-    backgroundColor: '#1fcc79',
+    // backgroundColor: '#1fcc79',
     borderRadius: 45,
     justifyContent: 'center',
     marginBottom: 100
@@ -88,13 +89,25 @@ const estilos = StyleSheet.create({
     
   },
   cadastroTexto: {
-    // fontSize: 15,
-    //,
     color: '#400303',
     height: 200,
     width: 300,
     marginTop: 50,
   },
+    appButtonContainer: {
+      elevation: 8,
+      backgroundColor: '#1fcc79',
+      borderRadius: 45,
+      paddingVertical: 12,
+      paddingHorizontal: 12,
+    },
+    appButtonText: {
+      fontSize: 15,
+      color: "#fff",
+      fontWeight: "bold",
+      alignSelf: "center",
+      textTransform: "uppercase"
+    }
 });
 
 export default estilos;

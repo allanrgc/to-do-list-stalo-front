@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, } from "react-native";
+import { View, Text, TextInput, Button, TouchableOpacity, } from "react-native";
 import { Ionicons, } from '@expo/vector-icons';
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,16 +21,21 @@ const addAuthToken = async (config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // console.log(config)
   return config;
 };
 api.interceptors.request.use(addAuthToken);
 
-export default function TelaLogin ({fazerLogin}) {
+export default function TelaLogin ({fazerLogin, teste}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [ flagInputFocus, setFlagInputFocus ] = useState("");
   const [isTrue, setIsTrue] = useState(false);
+  const [secureTextEntry, setSecureTextEntry] = useState(true)
+
   
+// console.log(getTokenLocally())
+// console.log(addAuthToken())
 
   const saveToken = async (token) => {
     try {
@@ -39,9 +44,19 @@ export default function TelaLogin ({fazerLogin}) {
       console.error('Erro ao armazenar o token:', error);
     }
   };
+  const toggleSecureTextEntry = () => {
+    setSecureTextEntry(!secureTextEntry);
+  };
   
 
   const navigation = useNavigation()
+
+  const AppButton = ({ onPress, title }) => (
+    <TouchableOpacity onPress={onPress} style={estilos.appButtonContainer}>
+      <Text style={estilos.appButtonText}>{title}</Text>
+    </TouchableOpacity>
+  );
+  
   return (
     <View>
       <View style={ estilos.container }>
@@ -69,16 +84,15 @@ export default function TelaLogin ({fazerLogin}) {
               placeholder="Password"
               value={password}
               onChangeText={text => setPassword(text)}
-              secureTextEntry
-              textAlign="left"
               keyboardType="default"
+              secureTextEntry={secureTextEntry}
               paddingLeft = {30}
               style = { flagInputFocus === "foco2" ?
               estilos.inputFocus : estilos.inputNormal }
               onFocus ={ () => setFlagInputFocus("foco2")}
               onBlur = { () => setFlagInputFocus("") }
             />
-            <Ionicons style={estilos.iconEye} name="md-eye-outline" size={24} color="black" />
+            <Ionicons onPress={() => toggleSecureTextEntry()} style={estilos.iconEye} name={secureTextEntry ? "md-eye-outline" : "md-eye-off"} size={24} color="black" />
           </View>
           <View style = { estilos.forgotPass }>
             
@@ -88,13 +102,8 @@ export default function TelaLogin ({fazerLogin}) {
         
 
         <View style = { estilos.boxBotao }>
-          <Button 
-            style={estilos.botaoLogin}
-            title="Login" 
-            // onPress = { console.log("nada ainda") } 
-            color="#00000000"
-            onPress={() => fazerLogin(email, password)}
-            />
+          <AppButton title="Login"
+          onPress={() => fazerLogin(email, password)}/>
         </View>
 
         <View style={estilos.cadastroTexto}>
