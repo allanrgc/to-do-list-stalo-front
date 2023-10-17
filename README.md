@@ -5,16 +5,16 @@ Bem-vindo ao meu aplicativo de To Do List feito com React Native! Este aplicativ
 ## Capturas de Tela
 
 ### Tela de Login
-![Tela de Login](./assets/app-pic/app-pic-img1.png)
+![Tela de Login](./assets/app-pic/app-pic-img1.jpg)
 
 ### Tela de Login (com email e senha preenchidos)
-![Tela de Login (preenchido)](./assets/app-pic/app-pic-img2.png)
+![Tela de Login (preenchido)](./assets/app-pic/app-pic-img2.jpg)
 
 ### Tela de Cadastro
-![Tela de Cadastro](./assets/app-pic/app-pic-img3.png)
+![Tela de Cadastro](./assets/app-pic/app-pic-img3.jpg)
 
 ### Tela Inicial do App
-![Tela Inicial](./assets/app-pic/app-pic-img4.png)
+![Tela Inicial](./assets/app-pic/app-pic-img4.jpg)
 
 ## Como Rodar o App
 
